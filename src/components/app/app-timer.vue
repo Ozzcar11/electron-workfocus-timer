@@ -8,14 +8,16 @@ import {
   baseWorkConfig,
 } from "@/constants/timerConfig"
 
-let currentStep = ref(0)
-let allSteps = ref(1)
+import type { Step } from "@/types/step"
 
-const breakHandler = computed(() =>
+let currentStep = ref<number>(0)
+let allSteps = ref<number>(1)
+
+const breakHandler = computed<Step>(() =>
   allSteps.value % longBreakStep === 0 ? longBreakConfig : baseBreackConfig
 )
 
-const availableSteps = [
+const availableSteps: Step[] = [
   baseWorkConfig,
   {
     get title() {
@@ -27,12 +29,12 @@ const availableSteps = [
   },
 ]
 
-const getCurrentStep = computed(() => availableSteps[currentStep.value])
+const getCurrentStep = computed<Step>(() => availableSteps[currentStep.value])
 
-const showTime = ref(`${getCurrentStep.value.time}:00`)
+const showTime = ref<string>(`${getCurrentStep.value.time}:00`)
 
 function startTimer() {
-  const currentTime = new Date(getCurrentStep.value.time * mlsecInMin)
+  const currentTime: Date = new Date(getCurrentStep.value.time * mlsecInMin)
 
   const timerInterval = setInterval(() => {
     if (currentTime.getTime() <= 0) {
