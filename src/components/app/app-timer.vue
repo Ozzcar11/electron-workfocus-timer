@@ -1,49 +1,33 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue"
-
-const mlsecInMin = 60000
+import {
+  longBreakConfig,
+  baseBreackConfig,
+  longBreakStep,
+  mlsecInMin,
+  baseWorkConfig,
+} from "@/constants/timerConfig"
 
 let currentStep = ref(0)
-const allSteps = [
+let allSteps = ref(1)
+
+const breakHandler = computed(() =>
+  allSteps.value % longBreakStep === 0 ? longBreakConfig : baseBreackConfig
+)
+
+const availableSteps = [
+  baseWorkConfig,
   {
-    title: "ЛЕТС ГОУУ!!!!",
-    time: 0.1,
-  },
-  {
-    title: "Отдых",
-    time: 0.2,
-  },
-  {
-    title: "Работаем. Метро Любюлино",
-    time: 25,
-  },
-  {
-    title: "Отдых",
-    time: 5,
-  },
-  {
-    title: "Ещё немножко братишка",
-    time: 25,
-  },
-  {
-    title: "Отдых",
-    time: 5,
-  },
-  {
-    title: "Последний рывок. Ты справишься!",
-    time: 25,
-  },
-  {
-    title: "Отдых",
-    time: 5,
-  },
-  {
-    title: "Длинный отдых",
-    time: 15,
+    get title() {
+      return breakHandler.value.title
+    },
+    get time() {
+      return breakHandler.value.time
+    },
   },
 ]
 
-const getCurrentStep = computed(() => allSteps[currentStep.value])
+const getCurrentStep = computed(() => availableSteps[currentStep.value])
 
 const showTime = ref(`${getCurrentStep.value.time}:00`)
 
@@ -51,18 +35,26 @@ function startTimer() {
   const currentTime = new Date(getCurrentStep.value.time * mlsecInMin)
 
   const timerInterval = setInterval(() => {
+    if (currentTime.getTime() <= 0) {
+      clearInterval(timerInterval)
+
+      if (currentStep.value !== availableSteps.length - 1) {
+        currentStep.value++
+      } else {
+        currentStep.value = 0
+        allSteps.value++
+      }
+
+      showTime.value = `${getCurrentStep.value.time}:00`
+      return
+    }
+
     showTime.value = new Date(
       currentTime.setSeconds(currentTime.getSeconds() - 1)
     ).toLocaleTimeString([], {
       minute: "2-digit",
       second: "2-digit",
     })
-
-    if (currentTime.getTime() <= 0) {
-      clearInterval(timerInterval)
-      currentStep.value += 1
-      showTime.value = `${getCurrentStep.value.time}:00`
-    }
   }, 1000)
 }
 </script>
@@ -71,6 +63,7 @@ function startTimer() {
   <div class="clock">
     <div class="clock__step">{{ getCurrentStep.title }}</div>
     <div class="clock__self">{{ showTime }}</div>
+    <div class="">{{ allSteps }}</div>
     <button class="clock__button" @click="startTimer">Start</button>
   </div>
 </template>
