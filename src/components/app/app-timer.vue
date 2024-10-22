@@ -75,6 +75,17 @@ function startTimer() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 600px;
+  background-color: #ffffff11;
+  border-radius: 15px;
+  padding: 20px;
+  transition: background-color 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #ffffff22;
+  }
+
   &__self {
     font-size: 60px;
     font-weight: 700;
