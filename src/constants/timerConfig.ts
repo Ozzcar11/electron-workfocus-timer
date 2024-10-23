@@ -1,7 +1,7 @@
 import type { Step } from "@/types/step";
 
 export const baseWorkConfig: Step = {
-  title: "Работаем",
+  title: "Time to focus!",
   time: 1,
 }
 
@@ -15,5 +15,5 @@ export const longBreakConfig: Step = {
   time: 1,
 }
 
-export const mlsecInMin = 60000
+export const millisecondsInMinutes = 60000
 export const longBreakStep = 4

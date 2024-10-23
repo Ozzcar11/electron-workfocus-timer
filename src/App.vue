@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { throttle } from "@/utils/throttle"
+import { centerX, centerY } from "./composables/windowValues"
 
 import AppTimer from "@/components/app/app-timer.vue"
 
@@ -8,22 +9,16 @@ const mouseDegrees = ref<number>(0)
 
 const getStringMouseDegress = computed(() => `${mouseDegrees.value}deg`)
 
-const test = throttle((event: MouseEvent) => {
-  const width = window.innerWidth
-  const height = window.innerHeight
-
-  const centerX = width / 2
-  const centerY = height / 2
-
-  const deltaX = event.clientX - centerX
-  const deltaY = event.clientY - centerY
+const backgroundRotation = throttle((event: MouseEvent) => {
+  const deltaX = event.clientX - centerX.value
+  const deltaY = event.clientY - centerY.value
 
   mouseDegrees.value = (Math.atan2(deltaY, deltaX) * 180) / Math.PI - 90
 }, 50)
 </script>
 
 <template>
-  <div class="timer" @mousemove="test">
+  <div class="timer" @mousemove="backgroundRotation">
     <div class="timer__wrapper">
       <div class="timer__title">WORKFOCUS</div>
       <app-timer />
@@ -61,7 +56,7 @@ const test = throttle((event: MouseEvent) => {
     text-align: center;
     font-size: 60px;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin: 20px 0;
     cursor: default;
 
     &::before {
