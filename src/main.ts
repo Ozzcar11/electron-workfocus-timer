@@ -16,6 +16,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    autoHideMenuBar: true,
   });
 
   // and load the index.html of the app.
@@ -25,9 +26,9 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  mainWindow.removeMenu();
 };
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
