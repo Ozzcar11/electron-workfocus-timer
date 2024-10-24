@@ -11,14 +11,14 @@ import {
 
 import type { Step } from "@/types/step"
 
-let currentStep = ref<number>(0)
-let allSteps = ref<number>(1)
+const currentStep = ref<number>(0)
+const allSteps = ref<number>(1)
 
 const breakHandler = computed<Step>(() =>
   allSteps.value % longBreakStep === 0 ? longBreakConfig : baseBreackConfig
 )
 
-const availableSteps: Step[] = [
+const availableSteps: readonly Step[] = [
   baseWorkConfig,
   {
     get title() {
@@ -34,23 +34,16 @@ const getCurrentStep = computed<Step>(() => availableSteps[currentStep.value])
 
 const showTime = ref<string>(getProperStringTime(getCurrentStep.value.time))
 
+let timerInterval: NodeJS.Timeout | null = null
+
 function startTimer() {
   const currentTime: Date = new Date(
     getCurrentStep.value.time * millisecondsInMinutes
   )
 
-  const timerInterval = setInterval(() => {
+  timerInterval = setInterval(() => {
     if (currentTime.getTime() <= 0) {
-      clearInterval(timerInterval)
-
-      if (currentStep.value !== availableSteps.length - 1) {
-        currentStep.value++
-      } else {
-        currentStep.value = 0
-        allSteps.value++
-      }
-
-      showTime.value = getProperStringTime(getCurrentStep.value.time)
+      incrementStep()
       return
     }
 
@@ -62,6 +55,19 @@ function startTimer() {
     })
   }, 1000)
 }
+
+function incrementStep() {
+  clearInterval(timerInterval)
+
+  if (currentStep.value < availableSteps.length - 1) {
+    currentStep.value++
+  } else {
+    currentStep.value = 0
+    allSteps.value++
+  }
+
+  showTime.value = getProperStringTime(getCurrentStep.value.time)
+}
 </script>
 
 <template>
@@ -70,7 +76,7 @@ function startTimer() {
     <div class="clock__self">{{ showTime }}</div>
     <div class="clock__step">#{{ allSteps }}</div>
     <button class="clock__button" @click="startTimer">START</button>
-    <button class="clock__skip" @click="currentStep++">SKIP</button>
+    <button class="clock__skip" @click="incrementStep">SKIP</button>
   </div>
 </template>
 
